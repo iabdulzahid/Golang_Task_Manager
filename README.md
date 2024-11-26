@@ -1,6 +1,6 @@
-# Golang_Task_Manager
+# Go_Task_Manager
 
-**Golang_Task_Manager** is a task management API built using **Go (Golang)** and **SQLite**. This API provides a lightweight solution for managing tasks, supporting key features such as **CRUD operations**, **task prioritization**, **due dates**, **labels**, and **data export** in **JSON** and **CSV** formats. The API also includes **rate limiting** to ensure fair usage and prevent abuse.
+**Go_Task_Manager** is a task management API built using **Go (Golang)** and **SQLite**. This API provides a lightweight solution for managing tasks, supporting key features such as **CRUD operations**, **task prioritization**, **due dates**, **labels**, and **data export** in **JSON** and **CSV** formats. The API also includes **rate limiting** to ensure fair usage and prevent abuse.
 
 ## Features
 - **Task CRUD Operations**: Create, read, update, and delete tasks.
@@ -122,7 +122,7 @@ To ensure fair usage of the API, **rate limiting** is implemented. By default, u
 
 ## Contributing
 
-We welcome contributions to **Golang_Task_Manager**! If you find any bugs or want to add features, feel free to submit a pull request. When contributing, please ensure you:
+We welcome contributions to **Go_Task_Manager**! If you find any bugs or want to add features, feel free to submit a pull request. When contributing, please ensure you:
 - Follow the existing code style.
 - Write tests for any new features.
 - Update the documentation if necessary.

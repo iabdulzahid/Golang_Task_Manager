@@ -26,8 +26,8 @@
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/golang_task_manager.git
-    cd golang_task_manager
+    git clone https://github.com/your-username/go_task_manager.git
+    cd go_task_manager
     ```
 
 2. **Install dependencies**:

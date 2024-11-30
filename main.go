@@ -12,7 +12,7 @@ import (
 	zLogger "github.com/iabdulzahid/go-logger/logger"
 	_ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 	"github.com/iabdulzahid/golang_task_manager/internal/api"
-	dbFunc "github.com/iabdulzahid/golang_task_manager/internal/db"
+	taskDB "github.com/iabdulzahid/golang_task_manager/internal/db"
 	"github.com/iabdulzahid/golang_task_manager/internal/export"
 	"github.com/iabdulzahid/golang_task_manager/internal/middleware"
 	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
@@ -33,7 +33,7 @@ import (
 // @BasePath /api
 func main() {
 	// Initialize Database
-	db, err := dbFunc.InitDB()
+	db, err := taskDB.InitDB()
 	if err != nil {
 		log.Fatal("Error initializing database:", err)
 	}
@@ -57,8 +57,8 @@ func main() {
 	globals.DB = db
 
 	logger := goLogger.WithContext(
-		zap.String("request_id", "12345"),
-		zap.String("user_id", "admin"),
+		zap.String("requestId", "12345"),
+		zap.String("userId", "admin"),
 	)
 	logger.Debug("welcome to Golang Task Manager", "time", time.Now())
 	globals.Logger = *logger

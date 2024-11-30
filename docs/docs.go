@@ -154,7 +154,7 @@ const docTemplate = `{
                 "summary": "Get task by ID",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -196,7 +196,7 @@ const docTemplate = `{
                 "summary": "Update an existing task",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -247,7 +247,7 @@ const docTemplate = `{
                 "summary": "Delete a task",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -286,6 +286,19 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Priority": {
+            "type": "string",
+            "enum": [
+                "Low",
+                "Medium",
+                "High"
+            ],
+            "x-enum-varnames": [
+                "Low",
+                "Medium",
+                "High"
+            ]
+        },
         "models.SuccessMessage": {
             "type": "object",
             "properties": {
@@ -307,7 +320,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "labels": {
                     "type": "array",
@@ -316,7 +329,12 @@ const docTemplate = `{
                     }
                 },
                 "priority": {
-                    "type": "string"
+                    "description": "Swagger annotation for enum",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Priority"
+                        }
+                    ]
                 },
                 "title": {
                     "type": "string"

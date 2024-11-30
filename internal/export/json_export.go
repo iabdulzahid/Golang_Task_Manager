@@ -4,11 +4,12 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	dbFunc "github.com/iabdulzahid/golang_task_manager/internal/db"
 	"github.com/iabdulzahid/golang_task_manager/internal/models"
+	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
 )
 
 // ExportTasks godoc
@@ -23,9 +24,9 @@ import (
 // @Router /tasks/export [get]
 func ExportTasks(c *gin.Context) {
 	format := c.DefaultQuery("format", "json")
-
+	logger := globals.Logger
 	// Fetch tasks from the database
-	tasks, err := dbFunc.GetTasks()
+	tasks, err := dbFunc.GetTasks(logger)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to fetch tasks"})
 		return
@@ -73,14 +74,14 @@ func exportTasksToCSV(c *gin.Context, tasks []models.Task) {
 	// Write task data
 	for _, task := range tasks {
 		err := writer.Write([]string{
-			strconv.Itoa(task.ID),
+			task.ID,
 			task.Title,
 			task.Description,
-			task.Priority,
-			// task.DueDate.Format(time.RFC3339),
-			// strings.Join(task.Labels, ","),
-			// task.CreatedAt.Format(time.RFC3339),
-			// task.UpdatedAt.Format(time.RFC3339),
+			string(task.Priority),
+			task.DueDate,
+			strings.Join(task.Labels, ","),
+			task.CreatedAt,
+			task.UpdatedAt,
 		})
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to write task data to CSV"})

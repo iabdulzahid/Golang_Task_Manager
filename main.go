@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	// _ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 	zLogger "github.com/iabdulzahid/go-logger/logger"
+	_ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 	"github.com/iabdulzahid/golang_task_manager/internal/api"
 	dbFunc "github.com/iabdulzahid/golang_task_manager/internal/db"
 	"github.com/iabdulzahid/golang_task_manager/internal/export"
@@ -49,6 +49,10 @@ func main() {
 			LogOutput:          []string{"stdout", "file"},
 		},
 	)
+
+	if err != nil {
+		log.Fatal("Failed to create logger: ", err)
+	}
 
 	globals.DB = db
 

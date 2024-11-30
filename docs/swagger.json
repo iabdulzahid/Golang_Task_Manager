@@ -148,7 +148,7 @@
                 "summary": "Get task by ID",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -190,7 +190,7 @@
                 "summary": "Update an existing task",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -241,7 +241,7 @@
                 "summary": "Delete a task",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Task ID",
                         "name": "id",
                         "in": "path",
@@ -280,6 +280,19 @@
                 }
             }
         },
+        "models.Priority": {
+            "type": "string",
+            "enum": [
+                "Low",
+                "Medium",
+                "High"
+            ],
+            "x-enum-varnames": [
+                "Low",
+                "Medium",
+                "High"
+            ]
+        },
         "models.SuccessMessage": {
             "type": "object",
             "properties": {
@@ -301,7 +314,7 @@
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "labels": {
                     "type": "array",
@@ -310,7 +323,12 @@
                     }
                 },
                 "priority": {
-                    "type": "string"
+                    "description": "Swagger annotation for enum",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Priority"
+                        }
+                    ]
                 },
                 "title": {
                     "type": "string"

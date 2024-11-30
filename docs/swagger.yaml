@@ -5,6 +5,16 @@ definitions:
       error:
         type: string
     type: object
+  models.Priority:
+    enum:
+    - Low
+    - Medium
+    - High
+    type: string
+    x-enum-varnames:
+    - Low
+    - Medium
+    - High
   models.SuccessMessage:
     properties:
       message:
@@ -19,13 +29,15 @@ definitions:
       due_date:
         type: string
       id:
-        type: integer
+        type: string
       labels:
         items:
           type: string
         type: array
       priority:
-        type: string
+        allOf:
+        - $ref: '#/definitions/models.Priority'
+        description: Swagger annotation for enum
       title:
         type: string
       updated_at:
@@ -101,7 +113,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       responses:
         "200":
           description: OK
@@ -125,7 +137,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -153,7 +165,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Task data
         in: body
         name: task

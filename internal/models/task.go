@@ -2,15 +2,25 @@ package models
 
 // Task struct for task model
 type Task struct {
-	ID          int      `json:"id"`
+	ID          string   `json:"id"`
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
-	Priority    string   `json:"priority"`
+	Priority    Priority `json:"priority" enum:"Low,Medium,High"` // Swagger annotation for enum
 	DueDate     string   `json:"due_date"`
 	Labels      []string `json:"labels"`
 	CreatedAt   string   `json:"created_at"`
 	UpdatedAt   string   `json:"updated_at"`
 }
+
+// Define the custom type for Priority
+type Priority string
+
+// Define constants for the priority values
+const (
+	Low    Priority = "Low"
+	Medium Priority = "Medium"
+	High   Priority = "High"
+)
 
 // SuccessResponse is a struct for success responses
 type SuccessResponse struct {

@@ -4,8 +4,12 @@ import (
 	"net/http"
 	"strconv"
 
+	// _ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
+
 	"github.com/gin-gonic/gin"
+	"github.com/iabdulzahid/golang_task_manager/internal/db"
 	"github.com/iabdulzahid/golang_task_manager/internal/models"
+	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
 )
 
 // CreateTask godoc
@@ -14,21 +18,24 @@ import (
 // @Tags tasks
 // @Accept json
 // @Produce json
-// @Param task body model.Task true "Task data"
-// @Success 201 {object} model.Task
-// @Failure 400 {object} gin.H{"error": "Bad request"}
-// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Param task body models.Task true "Task data"
+// @Success 201 {object} models.SuccessMessage "Task Created Successfully"
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /tasks [post]
 func CreateTask(c *gin.Context) {
+	logger := globals.Logger
 	var task models.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		logger.Info("CreateTask", "err", err.Error())
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	// Validate task
-	if task.Title == "" || task.Priority == "" || task.DueDate.IsZero() {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing required fields"})
+	if task.Title == "" || task.Priority == "" || task.DueDate == "" {
+		// Respond(c, http.StatusBadRequest, "Missing required fields", nil)
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Missing required fields"})
 		return
 	}
 
@@ -38,14 +45,15 @@ func CreateTask(c *gin.Context) {
 	}
 
 	// Create task
-	err := createTask(&task)
+	err := db.CreateTask(&task)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Respond(c, http.StatusBadRequest, "Missing required fields", nil)
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	// Return the created task
-	c.JSON(http.StatusCreated, task)
+	c.JSON(http.StatusCreated, models.SuccessMessage{"Task Created Succesfully"})
 }
 
 // GetAllTasks godoc
@@ -53,15 +61,15 @@ func CreateTask(c *gin.Context) {
 // @Description Get a list of all tasks in the system
 // @Tags tasks
 // @Produce json
-// @Success 200 {array} model.Task
-// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Success 200 {array} models.Task
+// @Failure 500 {object} models.ErrorResponse
 // @Router /tasks [get]
 func GetAllTasks(c *gin.Context) {
 	// Call the function to get tasks
-	tasks, err := GetTasks()
+	tasks, err := db.GetTasks()
 	if err != nil {
 		// If there's an error, return 500 with the error message
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks: " + err.Error()})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to fetch tasks: " + err.Error()})
 		return
 	}
 
@@ -75,15 +83,15 @@ func GetAllTasks(c *gin.Context) {
 // @Tags tasks
 // @Produce json
 // @Param id path int true "Task ID"
-// @Success 200 {object} model.Task
-// @Failure 404 {object} gin.H{"error": "Task not found"}
-// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Success 200 {object} models.Task
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /tasks/{id} [get]
 func GetTaskByID(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	task, err := getTaskByID(id)
+	task, err := db.GetTaskByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		c.JSON(http.StatusNotFound, models.ErrorResponse{Error: "Task not found"})
 		return
 	}
 
@@ -97,24 +105,24 @@ func GetTaskByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Task ID"
-// @Param task body model.Task true "Task data"
-// @Success 200 {object} model.Task
-// @Failure 400 {object} gin.H{"error": "Bad request"}
-// @Failure 404 {object} gin.H{"error": "Task not found"}
-// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Param task body models.Task true "Task data"
+// @Success 200 {object} models.Task
+// @Failure 400 {object} models.ErrorResponse
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /tasks/{id} [put]
 func UpdateTask(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 	var task models.Task
 	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	// Update task
-	updatedTask, err := updateTask(id, &task)
+	updatedTask, err := db.UpdateTask(id, &task)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -126,17 +134,25 @@ func UpdateTask(c *gin.Context) {
 // @Description Delete a task by its ID
 // @Tags tasks
 // @Param id path int true "Task ID"
-// @Success 200 {object} gin.H{"message": "Task deleted"}
-// @Failure 404 {object} gin.H{"error": "Task not found"}
-// @Failure 500 {object} gin.H{"error": "Internal server error"}
+// @Success 200 {object} models.SuccessMessage
+// @Failure 404 {object} models.ErrorResponse
+// @Failure 500 {object} models.ErrorResponse
 // @Router /tasks/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
-	err := deleteTask(id)
+	err := db.DeleteTask(id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Task deleted"})
+	c.JSON(http.StatusOK, models.SuccessMessage{Message: "Task deleted"})
+}
+
+// SendErrorResponse sends an error response with a custom key and error message
+func SendResponse(c *gin.Context, statusCode int, messageKey string, message string) {
+	// Create a map with dynamic key and message
+	c.JSON(statusCode, map[string]string{
+		messageKey: message, // Use the dynamic key passed in the function
+	})
 }

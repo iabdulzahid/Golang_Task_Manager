@@ -1,10 +1,12 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/iabdulzahid/golang_task_manager/internal/models"
 )
 
 var requestCount = make(map[string]int) // Tracks requests per IP
@@ -28,8 +30,8 @@ func RateLimiter() gin.HandlerFunc {
 
 		// Check the number of requests from this IP
 		if requestCount[ip] > maxRequests {
-			c.JSON(http.StatusTooManyRequests, gin.H{
-				"error": "Rate limit exceeded. Please try again later.",
+			c.JSON(http.StatusTooManyRequests, models.ErrorResponse{
+				Error: "Rate limit exceeded. Please try again later.",
 			})
 			c.Abort()
 			return

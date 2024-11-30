@@ -266,8 +266,8 @@ func UpdateTaskPriority(taskID string, newPriority string) error {
 }
 
 // DeleteTask deletes a task by ID
-func DeleteTask(id int) error {
+func DeleteTask(taskId string) error {
 	db := globals.DB
-	_, err := db.Exec("DELETE FROM tasks WHERE id = $1", id)
+	_, err := db.Exec("DELETE FROM tasks WHERE id = $1", taskId)
 	return err
 }

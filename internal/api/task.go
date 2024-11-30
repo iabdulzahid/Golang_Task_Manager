@@ -3,7 +3,6 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	_ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 
@@ -148,8 +147,8 @@ func UpdateTask(c *gin.Context) {
 // @Failure 500 {object} models.ErrorResponse
 // @Router /tasks/{id} [delete]
 func DeleteTask(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	err := db.DeleteTask(id)
+	taskId := c.Param("id")
+	err := db.DeleteTask(taskId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return

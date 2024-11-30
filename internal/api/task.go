@@ -53,7 +53,7 @@ func CreateTask(c *gin.Context) {
 	}
 
 	// Return the created task
-	c.JSON(http.StatusCreated, models.SuccessMessage{"Task Created Succesfully"})
+	c.JSON(http.StatusCreated, models.SuccessMessage{Message: "Task Created Succesfully"})
 }
 
 // GetAllTasks godoc

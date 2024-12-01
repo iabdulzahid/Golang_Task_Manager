@@ -12,9 +12,10 @@ import (
 	zLogger "github.com/iabdulzahid/go-logger/logger"
 	_ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 	"github.com/iabdulzahid/golang_task_manager/internal/api"
-	taskDB "github.com/iabdulzahid/golang_task_manager/internal/db"
+	taskDB "github.com/iabdulzahid/golang_task_manager/internal/database"
 	"github.com/iabdulzahid/golang_task_manager/internal/export"
 	"github.com/iabdulzahid/golang_task_manager/internal/middleware"
+	"github.com/iabdulzahid/golang_task_manager/internal/monitor"
 	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -67,6 +68,8 @@ func main() {
 
 	// Apply rate limiting middleware
 	r.Use(middleware.RateLimiter())
+
+	go monitor.TaskMonitor(*logger)
 
 	// Swagger UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	dbFunc "github.com/iabdulzahid/golang_task_manager/internal/db"
+	dbFunc "github.com/iabdulzahid/golang_task_manager/internal/database"
 	"github.com/iabdulzahid/golang_task_manager/internal/models"
 	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
 )
@@ -73,11 +73,12 @@ func exportTasksToCSV(c *gin.Context, tasks []models.Task) {
 
 	// Write task data
 	for _, task := range tasks {
+		prior := globals.GetAddress(task.Priority)
 		err := writer.Write([]string{
 			task.ID,
 			task.Title,
 			task.Description,
-			string(task.Priority),
+			string(**prior),
 			task.DueDate,
 			strings.Join(task.Labels, ","),
 			task.CreatedAt,

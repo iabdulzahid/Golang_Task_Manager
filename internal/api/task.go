@@ -7,7 +7,7 @@ import (
 	_ "github.com/iabdulzahid/golang_task_manager/docs" // Import Swagger docs
 
 	"github.com/gin-gonic/gin"
-	"github.com/iabdulzahid/golang_task_manager/internal/db"
+	"github.com/iabdulzahid/golang_task_manager/internal/database"
 	"github.com/iabdulzahid/golang_task_manager/internal/models"
 	"github.com/iabdulzahid/golang_task_manager/pkg/globals"
 )
@@ -33,7 +33,7 @@ func CreateTask(c *gin.Context) {
 	}
 
 	// Validate task
-	if task.Title == "" || task.Priority == "" || task.DueDate == "" {
+	if task.Title == "" || task.DueDate == "" {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Missing required fields"})
 		return
 	}
@@ -43,17 +43,17 @@ func CreateTask(c *gin.Context) {
 		task.Labels = []string{}
 	}
 
-	if !globals.IsValidPriority(string(task.Priority)) {
+	if !globals.IsValidPriority(string(*task.Priority)) {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: fmt.Sprintf("invalid priority: %s. Valid values are: %v", task.Priority, globals.GetValidPriorityValues())})
 		return
 	}
 
-	if task.Priority == "" {
-		task.Priority = models.Medium // Default priority
+	if task.Priority == nil || *task.Priority == "" {
+		task.Priority = globals.GetAddress(models.Medium) // Default priority
 	}
 
 	// Create task
-	err := db.CreateTask(&task)
+	err := database.CreateTask(&task)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
@@ -74,7 +74,7 @@ func CreateTask(c *gin.Context) {
 func GetAllTasks(c *gin.Context) {
 	logger := globals.Logger
 	// Call the function to get tasks
-	tasks, err := db.GetTasks(logger)
+	tasks, err := database.GetTasks(logger)
 	if err != nil {
 		// If there's an error, return 500 with the error message
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to fetch tasks: " + err.Error()})
@@ -97,7 +97,7 @@ func GetAllTasks(c *gin.Context) {
 // @Router /tasks/{id} [get]
 func GetTaskByID(c *gin.Context) {
 	taskID := c.Param("id")
-	task, err := db.GetTaskByID(taskID)
+	task, err := database.GetTaskByID(taskID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, models.ErrorResponse{Error: "Task not found"})
 		return
@@ -128,7 +128,7 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	// Update task
-	updatedTask, err := db.UpdateTask(taskId, task)
+	updatedTask, err := database.UpdateTask(taskId, task)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
@@ -148,7 +148,7 @@ func UpdateTask(c *gin.Context) {
 // @Router /tasks/{id} [delete]
 func DeleteTask(c *gin.Context) {
 	taskId := c.Param("id")
-	err := db.DeleteTask(taskId)
+	err := database.DeleteTask(taskId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return

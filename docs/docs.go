@@ -322,6 +322,10 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "is_overdue": {
+                    "description": "Computed field",
+                    "type": "boolean"
+                },
                 "labels": {
                     "type": "array",
                     "items": {

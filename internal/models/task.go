@@ -2,14 +2,15 @@ package models
 
 // Task struct for task model
 type Task struct {
-	ID          string   `json:"id"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Priority    Priority `json:"priority" enum:"Low,Medium,High"` // Swagger annotation for enum
-	DueDate     string   `json:"due_date"`
-	Labels      []string `json:"labels"`
-	CreatedAt   string   `json:"created_at"`
-	UpdatedAt   string   `json:"updated_at"`
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Priority    *Priority `json:"priority" enum:"Low,Medium,High"` // Swagger annotation for enum
+	DueDate     string    `json:"due_date"`
+	IsOverdue   bool      `json:"is_overdue"` // Computed field
+	Labels      []string  `json:"labels"`
+	CreatedAt   string    `json:"created_at"`
+	UpdatedAt   string    `json:"updated_at"`
 }
 
 // Define the custom type for Priority
